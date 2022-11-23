@@ -1,33 +1,34 @@
 import numpy as np
-from Dataset import create_dataset
+from Dataset1 import create_dataset
+from Dataset2 import load_dataset
 from Model import Model
-from Layers import Layer_Dense
+from Layers import Layer_Dense, Layer_Dropout
 from Activation_Functions import Activation_ReLU, Activation_Softmax
 from Metric_Functions import Loss_CategoricalCrossEntropy, Accuracy_Categorical
 from Optimizers import Optimizer_Adam
 
-X, y, X_test, y_test = create_dataset('archive')
+X_train, X_test, y_train, y_test = load_dataset('crop', 'archive2')
 
 # Shuffle training dataset
-keys = np.array(range(X.shape[0]))
+keys = np.array(range(X_train.shape[0]))
 np.random.shuffle(keys)
-X = X[keys]
-y = y[keys]
+X_train = X_train[keys]
+y_train = y_train[keys]
 
 # Scale and reshape samples
-X = (X.reshape(X.shape[0], -1).astype(np.float32) - 127.5) / 127.5
+X_train = (X_train.reshape(X_train.shape[0], -1).astype(np.float32) - 127.5) / 127.5
 X_test = (X_test.reshape(X_test.shape[0], -1).astype(np.float32) - 127.5) / 127.5
 
 # Instantiate our model
 model = Model()
 
 # Add layers
-model.add(Layer_Dense(X.shape[1], 128))
+model.add(Layer_Dense(X_train.shape[1], 128))
 model.add(Activation_ReLU())
+model.add(Layer_Dropout(0.25))
 model.add(Layer_Dense(128, 128))
 model.add(Activation_ReLU())
-model.add(Layer_Dense(128, 128))
-model.add(Activation_ReLU())
+model.add(Layer_Dropout(0.25))
 model.add(Layer_Dense(128, 40))
 model.add(Activation_Softmax())
 
@@ -42,7 +43,7 @@ model.set(
 model.finalize()
 
 # Train!
-model.train(X, y, validation_data=(X_test, y_test), epochs=10, batch_size=40, print_every=6)
+model.train(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch_size=40, print_every=100)
 
 # Evaluate!
 model.evaluate(X_test, y_test)
