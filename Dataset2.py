@@ -19,6 +19,8 @@ def load_dataset(dataset, path):
     sorted_int_labels = np.array(tmp).astype('uint8')
 
     sorted_int_labels.sort()
+    #temp line below
+    sorted_int_labels = sorted_int_labels[:9]
 
     X = []
     y = []
@@ -27,13 +29,13 @@ def load_dataset(dataset, path):
         for file in os.listdir(os.path.join(path, dataset, str(label))):
             if not file.startswith('.'):
                 # Read image
-                IMG_SIZE = 200
+                IMG_SIZE = 50
                 image = cv2.imread(os.path.join(path, dataset, str(label), file))
                 new_image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
 
                 X.append(new_image)
                 y.append(label)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
 
     return np.array(X_train), np.array(X_test), np.array(y_train), np.array(y_test).astype('uint8')

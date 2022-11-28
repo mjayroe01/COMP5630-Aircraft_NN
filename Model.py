@@ -133,7 +133,7 @@ class Model:
                         self.loss.calculate(output, batch_y, include_regularization=True)
                     loss = data_loss + regularization_loss
 
-                    # Get predictions and calculate accuracy
+                    # Get predictions and calculate accuracy (temp removed this to save time)
                     predictions = self.output_layer_activation.predictions(output)
                     accuracy = self.accuracy.calculate(predictions, batch_y)
 
@@ -146,14 +146,14 @@ class Model:
                         self.optimizer.update_params(layer)
                     self.optimizer.post_update_params()
 
-                    # Print summary
-                    if not step % print_every or step == train_steps - 1:
-                        print(f'step: {step}, ' +
-                              f'accuracy: {accuracy:.3f}, ' +
-                              f'loss: {loss:3f} (' +
-                              f'data loss: {data_loss:.3f}, ' +
-                              f'regularization loss: {regularization_loss:.3f}), ' +
-                              f'learning rate: {self.optimizer.current_learning_rate}')
+                    # Print summary (temp removed this to read each epoch's data easier)
+                    #if not step % print_every or step == train_steps - 1:
+                    #    print(f'step: {step}, ' +
+                    #          f'accuracy: {accuracy:.3f}, ' +
+                    #          f'loss: {loss:3f} (' +
+                    #          f'data loss: {data_loss:.3f}, ' +
+                    #          f'regularization loss: {regularization_loss:.3f}), ' +
+                    #          f'learning rate: {self.optimizer.current_learning_rate}')
 
                 # Get and print epoch loss and accuracy
                 epoch_data_loss, epoch_regularization_loss = \
