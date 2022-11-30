@@ -1,3 +1,5 @@
+import copy
+import pickle
 import numpy as np
 from Layers import Layer_Input
 from Activation_Functions import Activation_Softmax
@@ -133,7 +135,7 @@ class Model:
                         self.loss.calculate(output, batch_y, include_regularization=True)
                     loss = data_loss + regularization_loss
 
-                    # Get predictions and calculate accuracy
+                    # Get predictions and calculate accuracy (temp removed this to save time)
                     predictions = self.output_layer_activation.predictions(output)
                     accuracy = self.accuracy.calculate(predictions, batch_y)
 
@@ -146,14 +148,14 @@ class Model:
                         self.optimizer.update_params(layer)
                     self.optimizer.post_update_params()
 
-                    # Print summary
-                    if not step % print_every or step == train_steps - 1:
-                        print(f'step: {step}, ' +
-                              f'accuracy: {accuracy:.3f}, ' +
-                              f'loss: {loss:3f} (' +
-                              f'data loss: {data_loss:.3f}, ' +
-                              f'regularization loss: {regularization_loss:.3f}), ' +
-                              f'learning rate: {self.optimizer.current_learning_rate}')
+                    # Print summary (temp removed this to read each epoch's data easier)
+                    #if not step % print_every or step == train_steps - 1:
+                    #    print(f'step: {step}, ' +
+                    #          f'accuracy: {accuracy:.3f}, ' +
+                    #          f'loss: {loss:3f} (' +
+                    #          f'data loss: {data_loss:.3f}, ' +
+                    #          f'regularization loss: {regularization_loss:.3f}), ' +
+                    #          f'learning rate: {self.optimizer.current_learning_rate}')
 
                 # Get and print epoch loss and accuracy
                 epoch_data_loss, epoch_regularization_loss = \
@@ -264,5 +266,80 @@ class Model:
         print(f'validation, ' +
               f'accuracy: {validation_accuracy:.3f}, ' +
               f'loss: {validation_loss:.3f}')
+
+    # Prediction method
+    # This method will take a trained model and a
+    # never-before-seen image and try to predict
+    # the correct classification.
+    # For example, if we show it a picture
+    # of an A10 Warthog, its output will be 'A10" and the
+    # corresponding index label (e.g., '0')
+    def predict(self, X, *, batch_size=None):
+        # Default if batch_size is not set
+        prediction_steps = 1
+
+        # Calculate number of steps
+        if batch_size is not None:
+            prediction_steps = len(X) // batch_size
+            # The above is floor division, so it will divide down
+            # If there's remaining data but not a full batch, it will not be included
+            # Add '1' to include this partial batch
+            if prediction_steps * batch_size < len(X):
+                prediction_steps += 1
+
+        # Model outputs
+        output = []
+
+        # Iterate over steps
+        for step in range(prediction_steps):
+            # If batch_size not set,
+            # train using one step and full dataset
+            if batch_size is None:
+                batch_X = X
+
+            # Otherwise slice a batch
+            else:
+                batch_X = X[step*batch_size:(step+1)*batch_size]
+
+            # Do forward pass
+            batch_ouput = self.forward(batch_X, train=False)
+
+            # Attach batch prediction to list of predictions
+            output.append(batch_ouput)
+
+        # Stack and return output
+        return np.vstack(output)
+
+
+    # Method to save our model
+    def save(self, path):
+        # Make deep copy of current model
+        model = copy.deepcopy(self)
+
+        # Reset accumulated values for loss and accuracy
+        model.loss.new_pass()
+        model.accuracy.new_pass()
+
+        # Remove data in input layer
+        # Reset gradients, if any exist
+        model.input_layer.__dict__.pop('output', None)
+        model.loss.__dict__.pop('dinputs', None)
+
+        # For every layer, remove inputs, output, and dinputs
+        for layer in model.layers:
+            for property in ['inputs', 'output', 'dinputs', 'dweights', 'dbiases']:
+                layer.__dict__.pop(property, None)
+
+        # Open file in binary write mode and save model
+        with open(path, 'wb') as f:
+            pickle.dump(model, f)
+
+    @staticmethod
+    def load(path):
+        # Open file in binary read mode and load model
+        with open(path, 'rb') as f:
+            model = pickle.load(f)
+
+        return model
 
 
