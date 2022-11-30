@@ -19,8 +19,6 @@ def load_dataset(path):
     sorted_int_labels = np.array(tmp).astype('uint8')
 
     sorted_int_labels.sort()
-    #temp line below
-    sorted_int_labels = sorted_int_labels[:9]
 
     X = []
     y = []

@@ -51,7 +51,7 @@ model.finalize()
 # If one wants to load a previous model, comment out
 # all lines above that contain 'model' and instantiate
 # the model with the load function.
-#model = model.load('military_aircraft_mlp.model')
+#model = model.load('military_aircraft_trained_mlp.model')
 
 # Train!
 model.train(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch_size=40, print_every=100)
@@ -60,4 +60,4 @@ model.train(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch
 model.evaluate(X_test, y_test)
 
 # Save model
-#model.save('military_aircraft_mlp.model')
+model.save('military_aircraft_trained_mlp.model')
