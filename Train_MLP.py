@@ -61,3 +61,4 @@ model.evaluate(X_test, y_test)
 
 # Save model
 model.save('military_aircraft_trained_mlp.model')
+
