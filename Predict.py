@@ -15,8 +15,17 @@ aircraft_labels = {
     9: 'V22'
 }
 
+# Asks used what image to predict (default is v22.jpg)
+image_name = input('Enter image name (leave blank for v22.jpg): ')
+image_path = 'identify/'
+if '.jpg' in image_name:
+    image_path += image_name
+else:
+    image_path += 'v22.jpg'
+
 # Read image
-image_data = cv2.imread('identify/v22.jpg')
+print('Predicting',image_path)
+image_data = cv2.imread(image_path)
 
 # Resize image
 image_data = cv2.resize(image_data, (50, 50))

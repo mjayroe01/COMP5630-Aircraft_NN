@@ -25,10 +25,10 @@ model = Model()
 inputLayer = X_train.shape[1]
 layerNum1 = 2000
 outputLayer = 10
-print(X_train.shape)
-print("input layer: ",inputLayer,
-      "\nhidden layer 1: ",layerNum1,
-      "\noutput layer: ",outputLayer)
+#print(X_train.shape)
+print('input layer: ',inputLayer,
+      '\nhidden layer 1: ',layerNum1,
+      '\noutput layer: ',outputLayer)
 model.add(Layer_Dense(inputLayer, inputLayer))
 model.add(Activation_ReLU())
 model.add(Layer_Dense(inputLayer, layerNum1))
