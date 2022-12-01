@@ -4,7 +4,7 @@ from Model import Model
 from Layers import Layer_Dense, Layer_Dropout
 from Activation_Functions import Activation_ReLU, Activation_Softmax
 from Metric_Functions import Loss_CategoricalCrossEntropy, Accuracy_Categorical
-from Optimizers import Optimizer_Adam
+from Optimizer import Optimizer_Adam
 
 X_train, X_test, y_train, y_test = load_dataset('dataset')
 
@@ -47,12 +47,6 @@ model.set(
 # Finalize model
 model.finalize()
 
-# Load a saved model to continue training
-# If one wants to load a previous model, comment out
-# all lines above that contain 'model' and instantiate
-# the model with the load function.
-#model = model.load('military_aircraft_trained_mlp.model')
-
 # Train!
 model.train(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch_size=40, print_every=100)
 
@@ -60,5 +54,5 @@ model.train(X_train, y_train, validation_data=(X_test, y_test), epochs=20, batch
 model.evaluate(X_test, y_test)
 
 # Save model
-model.save('military_aircraft_trained_mlp.model')
+#model.save('military_aircraft_trained_mlp.model')
 

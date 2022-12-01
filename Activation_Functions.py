@@ -56,38 +56,3 @@ class Activation_Softmax:
     # Calculate predictions for outputs
     def predictions(self, outputs):
         return np.argmax(outputs, axis=1)
-
-# Sigmoid Activation
-class Activation_Sigmoid:
-    # Forward pass
-    def forward(self, inputs, train):
-        # Save input, then calculate and save
-        # output of the sigmoid function
-        self.inputs = inputs
-        self.output = 1 / (1 + np.exp(-inputs))
-
-    # Backward pass
-    def backward(self, dvalues):
-        # DERIVATIVE - calculates from output of sigmoid function
-        self.dinputs = dvalues * (1 - self.output) * self.output
-
-    # Calculate predictions for outputs
-    def predictions(self, outputs):
-        return (outputs > 0.5) * 1
-
-# Linear Activation
-class Activation_Linear:
-    # Forward pass
-    def forward(self, inputs, train):
-        # All we have to do here is remember our values
-        self.inputs = inputs
-        self.output = inputs
-
-    # Backward pass
-    def backward(self, dvalues):
-        # derivative is 1, 1 * dvalues = dvalues - the chain rule
-        self.dinputs = dvalues.copy()
-
-    # Calculate predictions for outputs
-    def predictions(self, outputs):
-        return outputs

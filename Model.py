@@ -271,9 +271,6 @@ class Model:
     # This method will take a trained model and a
     # never-before-seen image and try to predict
     # the correct classification.
-    # For example, if we show it a picture
-    # of an A10 Warthog, its output will be 'A10" and the
-    # corresponding index label (e.g., '0')
     def predict(self, X, *, batch_size=None):
         # Default if batch_size is not set
         prediction_steps = 1

@@ -1,66 +1,6 @@
 import numpy as np
 
 
-# SGD Optimizer (Stochastic Gradient Descent)
-class Optimizer_SGD:
-    # Initialize optimizer
-    # Learning rate of 1. is default for this optimizer
-    def __init__(self, learning_rate=1., decay=0., momentum=0.):
-        self.learning_rate = learning_rate
-        self.current_learning_rate = learning_rate
-        self.decay = decay
-        self.iterations = 0
-        self.momentum = momentum
-
-    # Call once before any param updates
-    def pre_update_params(self):
-        if self.decay:
-            self.current_learning_rate = self.learning_rate * \
-                                         (1. / (1. + self.decay * self.iterations))
-
-    # Update params
-    def update_params(self, layer):
-        # If momentum is used
-        if self.momentum:
-            # If the layer doesn't contain momentum arrays,
-            # create them filled with zeros.
-            if not hasattr(layer, 'weight_momentums'):
-                layer.weight_momentums = np.zeros_like(layer.weights)
-
-                # If there is no momentum array for weights
-                # the biases array doesn't exist either
-                layer.bias_momentums = np.zeros_like(layer.biases)
-
-            # Build weight updates with momentum - take previous updates
-            # multiplied by retain factor and update with current gradients
-            weight_updates = \
-                self.momentum * layer.weight_momentums - \
-                self.current_learning_rate * layer.dweights
-            layer.weight_momentums = weight_updates
-
-            # Build bias updates
-            bias_updates = \
-                self.momentum * layer.bias_momentums - \
-                self.current_learning_rate * layer.dbiases
-            layer.bias_momentums = bias_updates
-
-        # regular SGD updates (like before we updated momentum)
-        else:
-            weight_updates = -self.current_learning_rate * \
-                             layer.dweights
-            bias_updates = -self.current_learning_rate * \
-                           layer.dbiases
-
-        # Update weights and biases using either regular
-        # or momentum updates
-        layer.weights += weight_updates
-        layer.biases += bias_updates
-
-    # Call once after any param updates
-    def post_update_params(self):
-        self.iterations += 1
-
-
 # Adam Optimizer (Adaptive Momentum)
 class Optimizer_Adam:
     # Initialize optimizer - set settings
@@ -127,4 +67,3 @@ class Optimizer_Adam:
     # Call once after any parameter updates
     def post_update_params(self):
         self.iterations += 1
-
