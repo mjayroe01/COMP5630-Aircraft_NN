@@ -1,14 +1,14 @@
 import numpy as np
 import cv2
 from Dataset import load_dataset
-from sklearn.utils._testing import ignore_warnings #WHY THIS NOT WORK
-from sklearn.exceptions import ConvergenceWarning #WHY THIS NOT WORK
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 
-ignore_warnings(category=ConvergenceWarning) #WHY THIS NOT WORK
+ignore_warnings(category=ConvergenceWarning)
 
 aircraft_labels = {
     0: 'AV8B',

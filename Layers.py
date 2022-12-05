@@ -7,7 +7,7 @@ class Layer_Dense:
         # Initialize weights and biases
         self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)
         self.biases = np.zeros((1, n_neurons))
-        # Set regularization robustness
+        # Regularization strength
         self.weight_regularizer_l1 = weight_regularizer_l1
         self.weight_regularizer_l2 = weight_regularizer_l2
         self.bias_regularizer_l1 = bias_regularizer_l1
