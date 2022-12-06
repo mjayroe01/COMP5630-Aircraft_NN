@@ -105,76 +105,67 @@ class Model:
                 if validation_steps * batch_size < len(X_val):
                     validation_steps += 1
 
-            # main training loop
-            for epoch in range(1, epochs + 1):
-                # Print out epoch number
-                print(f'epoch: {epoch}')
+        # main training loop
+        for epoch in range(1, epochs + 1):
+            # Print out epoch number
+            print(f'epoch: {epoch}')
 
-                # Reset accumulated values in loss and accuracy objects
-                self.loss.new_pass()
-                self.accuracy.new_pass()
+            # Reset accumulated values in loss and accuracy objects
+            self.loss.new_pass()
+            self.accuracy.new_pass()
 
-                # Iterate over steps
-                for step in range(train_steps):
-                    # If batch size is not set
-                    # train using one set and full dataset
-                    if batch_size is None:
-                        batch_X = X
-                        batch_y = y
+            # Iterate over steps
+            for step in range(train_steps):
+                # If batch size is not set
+                # train using one set and full dataset
+                if batch_size is None:
+                    batch_X = X
+                    batch_y = y
 
-                    # otherwise slice a batch
-                    else:
-                        batch_X = X[step * batch_size:(step + 1) * batch_size]
-                        batch_y = y[step * batch_size:(step + 1) * batch_size]
+                # otherwise slice a batch
+                else:
+                    batch_X = X[step * batch_size:(step + 1) * batch_size]
+                    batch_y = y[step * batch_size:(step + 1) * batch_size]
 
-                    # Do forward pass
-                    output = self.forward(batch_X, train=True)
+                # Do forward pass
+                output = self.forward(batch_X, train=True)
 
-                    # Calculate loss
-                    data_loss, regularization_loss = \
-                        self.loss.calculate(output, batch_y, include_regularization=True)
-                    loss = data_loss + regularization_loss
+                # Calculate loss
+                data_loss, regularization_loss = \
+                    self.loss.calculate(output, batch_y, include_regularization=True)
+                loss = data_loss + regularization_loss
 
-                    # Get predictions and calculate accuracy (temp removed this to save time)
-                    predictions = self.output_layer_activation.predictions(output)
-                    accuracy = self.accuracy.calculate(predictions, batch_y)
+                # Get predictions and calculate accuracy (temp removed this to save time)
+                predictions = self.output_layer_activation.predictions(output)
+                accuracy = self.accuracy.calculate(predictions, batch_y)
 
-                    # Do backward pass
-                    self.backward(output, batch_y)
+                # Do backward pass
+                self.backward(output, batch_y)
 
-                    # Optimize
-                    self.optimizer.pre_update_params()
-                    for layer in self.trainable_layers:
-                        self.optimizer.update_params(layer)
-                    self.optimizer.post_update_params()
+                # Optimize
+                self.optimizer.pre_update_params()
+                for layer in self.trainable_layers:
+                    self.optimizer.update_params(layer)
+                self.optimizer.post_update_params()
 
-                    # Print summary (temp removed this to read each epoch's data easier)
-                    #if not step % print_every or step == train_steps - 1:
-                    #    print(f'step: {step}, ' +
-                    #          f'accuracy: {accuracy:.3f}, ' +
-                    #          f'loss: {loss:3f} (' +
-                    #          f'data loss: {data_loss:.3f}, ' +
-                    #          f'regularization loss: {regularization_loss:.3f}), ' +
-                    #          f'learning rate: {self.optimizer.current_learning_rate}')
+            # Get and print epoch loss and accuracy
+            epoch_data_loss, epoch_regularization_loss = \
+                self.loss.calculate_accumulated(
+                    include_regularization=True)
+            epoch_loss = epoch_data_loss + epoch_regularization_loss
+            epoch_accuracy = self.accuracy.calculate_accumulated()
 
-                # Get and print epoch loss and accuracy
-                epoch_data_loss, epoch_regularization_loss = \
-                    self.loss.calculate_accumulated(
-                        include_regularization=True)
-                epoch_loss = epoch_data_loss + epoch_regularization_loss
-                epoch_accuracy = self.accuracy.calculate_accumulated()
+            print(f'training, ' +
+                  f'accuracy: {epoch_accuracy:.3f}, ' +
+                  f'loss: {epoch_loss:.3f} (' +
+                  f'data loss: {epoch_data_loss:.3f}, ' +
+                  f'regularization loss: {epoch_regularization_loss:.3f}), ' +
+                  f'learning rate: {self.optimizer.current_learning_rate}')
 
-                print(f'training, ' +
-                      f'accuracy: {epoch_accuracy:.3f}, ' +
-                      f'loss: {epoch_loss:.3f} (' +
-                      f'data loss: {epoch_data_loss:.3f}, ' +
-                      f'regularization loss: {epoch_regularization_loss:.3f}), ' +
-                      f'learning rate: {self.optimizer.current_learning_rate}')
-
-                # If validation data
-                if validation_data is not None:
-                    # Evaluate model
-                    self.evaluate(*validation_data, batch_size=batch_size)
+            # If validation data
+            if validation_data is not None:
+                # Evaluate model
+                self.evaluate(*validation_data, batch_size=batch_size)
 
     # Forward pass
     def forward(self, X, train):
@@ -211,7 +202,7 @@ class Model:
 
         # Call backward on loss, which will set dinputs property.
         # The last layer will attempt to access this shortly.
-        self.loss.backward(output, y)
+        self.loss.cbackward(output, y)
 
         # Call backward method going through all objects in reverse order
         # using dinputs as a param
@@ -296,7 +287,7 @@ class Model:
 
             # Otherwise slice a batch
             else:
-                batch_X = X[step*batch_size:(step+1)*batch_size]
+                batch_X = X[step * batch_size:(step + 1) * batch_size]
 
             # Do forward pass
             batch_ouput = self.forward(batch_X, train=False)
@@ -306,7 +297,6 @@ class Model:
 
         # Stack and return output
         return np.vstack(output)
-
 
     # Method to save our model
     def save(self, path):
@@ -338,5 +328,3 @@ class Model:
             model = pickle.load(f)
 
         return model
-
-
