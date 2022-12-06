@@ -202,7 +202,7 @@ class Model:
 
         # Call backward on loss, which will set dinputs property.
         # The last layer will attempt to access this shortly.
-        self.loss.cbackward(output, y)
+        self.loss.backward(output, y)
 
         # Call backward method going through all objects in reverse order
         # using dinputs as a param
